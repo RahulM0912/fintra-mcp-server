@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { pool } from "../utlis/db.js";
+import pool from "../utlis/db.js";
 import { readFileSync } from "fs";
 import { join } from "path";
 
@@ -71,24 +71,12 @@ export class McpServerTools {
         sql: z.string(),
       }),
       execute: async (arg: { sql: string }) => {
-        const client = await pool.connect();
-        try {
-          // const client = await pool.connect();
-          // simple test query to ensure connection is usable
-          await client.query("SELECT 1");
-          client.release();
-          console.log("Database connection successful2.");
-        } catch (err) {
-          console.error("Database connection failed:", err instanceof Error ? err.message : err);
-        }
         try {
           console.log("Executing SQL:", arg.sql);
-          const result = await client.query(arg.sql);
+          const result = await pool.query(arg.sql);
           return String(JSON.stringify(result.rows, null, 2));
         } catch (e) {
           return String("Error");
-        } finally {
-          client.release();
         }
       },
     }
