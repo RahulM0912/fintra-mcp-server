@@ -2,7 +2,6 @@ import { server } from "./server.js";
 import { McpServerTools } from "./controllers/tools.js";
 
 const mcpServerTool = new McpServerTools();
-server.addTool(mcpServerTool.getTableSchemaTool());
 server.addTool(mcpServerTool.getTableSchemaDescriptionTool());
 server.addTool(mcpServerTool.getTableColumnsDescriptionTool());
 server.addTool(mcpServerTool.getQueryTool());

@@ -3,35 +3,6 @@ import { pool } from "../utlis/db.js";
 import { readFileSync } from "fs";
 import { join } from "path";
 
-const readDatabaseTables = async () => {
-  const client = await pool.connect();
-  try {
-    const tables = await client.query(`
-      SELECT table_name
-      FROM information_schema.tables
-      WHERE table_schema = 'public'
-      ORDER BY table_name;
-    `);
-    const schema = [];
-    for (const row of tables.rows) {
-      const table = row.table_name;
-      const columns = await client.query(`
-        SELECT column_name, data_type
-        FROM information_schema.columns
-        WHERE table_name = $1;
-      `, [table]);
-      schema.push(
-        `${table}:\n` +
-        columns.rows.map(c => `  - ${c.column_name} (${c.data_type})`).join("\n")
-      );
-    }
-    return `${schema.join("\n\n")}`;
-  } catch (e) {
-    return "error in reading the resources";
-  } finally {
-    client.release();
-  }
-};
 
 const getTableDescription = () => {
   try {
@@ -56,17 +27,6 @@ const getTableColumnsDescription = () => {
 }
 
 export class McpServerTools {
-  
-  getTableSchemaTool() {
-    return {
-      name: "tableSchema",
-      description: "Returns the available Table Schema in the Database use this to query database",
-      execute: async () => {
-        const tableSchem = await readDatabaseTables();
-        return String(tableSchem);
-      },
-    };
-  }
 
   getTableSchemaDescriptionTool() {
     return {
